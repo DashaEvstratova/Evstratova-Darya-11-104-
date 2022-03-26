@@ -8,11 +8,10 @@ class Node:
     '''
     do the node
     '''
-    def __init__(self, key, value, left=None, right=None):
-        self.key = key
-        self.value = value
-        self.left = left
-        self.right = right
+    key: str
+    val: int
+    left = None
+    right = None
 
 class TreeMapRecurs:
     '''
