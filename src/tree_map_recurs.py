@@ -1,18 +1,18 @@
 '''
-do the tree_map
+do the tree_map_recurs
 '''
 
 from dataclasses import dataclass
 @dataclass
-class Node:
+class NodeTree:
     '''
-    do the node
+    do the node of tree_map
     '''
-    key: str
-    val: int
-    left = None
-    right = None
-
+    def __init__(self, key=None, value=None):
+        self.key = key
+        self.value = value
+        self.left = None
+        self.right = None
 class TreeMapRecurs:
     '''
     do the tree_map
@@ -25,7 +25,7 @@ class TreeMapRecurs:
         '''
         def inner_setitem(node):
             if node is None:
-                return Node(key, value)
+                return NodeTree(key, value)
             if key == node.key:
                 node.value = value
             elif key < node.key:
