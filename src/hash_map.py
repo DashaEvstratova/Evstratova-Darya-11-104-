@@ -1,35 +1,59 @@
+'''
+do the hash_map
+'''
+
+from dataclasses import dataclass
+
 class HashMap:
-    class Node: # Класс узла
-        def __init__(self,value = None,key = None ):
-            self.value = value
+    """
+    to do class HashMap
+    """
+    @dataclass
+    class Node:
+        """
+        to do class Node
+        """
+        next = None
+        def __init__(self, value = None, key = None):
             self.key = key
-            self.next = None
+            self.value = value
 
-    class Innerlinkedlist: # Класс односвязного списка
-        def __init__(self):
-            self.head = None
-            self.end = None
-            self.length = 0
+    @dataclass
+    class Innerlinkedlist:
+        """
+        to do class LinkedList
+        """
+        head = None
+        end = None
+        length = 0
 
-        def insertatend(self,value, key): # Вставка в конец
-            if self.head is None: # Если односвязного списка нет
+        def insertatend(self, value, key):
+            """
+            method insertatend
+            """
+            if self.head is None:
                 self.head = self.end = HashMap.Node(value, key)
-            else: # Если есть, то поставить его перед концом, None
+            else:
                 self.end.next = self.end = HashMap.Node(value, key)
             self.length +=1
 
-        def deletkey(self, key): # Удаление элемента из списка по ключу
-            a = self.head
-            if a.key == key: # Если такой ключ первый, то заменить его на след.
-                self.head = a.next
+        def deletkey(self, key):
+            """
+            method delet
+            """
+            node = self.head
+            leng = self.length
+            if node.key == key:
+                self.head = node.next
                 self.length-=1
-            else: # В противном идем по списку, когда находим убираем его и сдвигаем
-                while a.next:
-                    if a.next.key == key:
-                        a.next = a.next.next
-                        self.length -=1
-                        return
-            return KeyError("Нет элемента с таким ключом")
+            else:
+                while node.next:
+                    if node.next.key == key:
+                        node.next = node.next.next
+                        self.length -= 1
+                        break
+            if leng == self.length:
+                raise KeyError("Нет элемента с таким ключом")
 
         def __len__(self):
             return self.length
@@ -39,79 +63,85 @@ class HashMap:
         self._size = _size
         self._leng = 0
 
-    def __getitem__(self, key): # Получение элемента по ключу
+    def __getitem__(self, key):
         linked_list = self._inner_list[hash(key) % self._size]
-        if linked_list is None: # Если такого хэша еще не было, то создается список для него
+        if linked_list is None:
             raise KeyError("Нет элемента с таким ключом")
-        a = linked_list.head # В противном же случае проходимся по списку с таким же значением хеша
-        while a:
-            if a.key == key:
-                return a.value
-            a = a.next
+        node = linked_list.head
+        while node:
+            if node.key == key:
+                return node.value
+            node = node.next
         raise KeyError("Нет элемента с таким ключом")
 
-    def __setitem__(self, key, value): # Настройка элементов
-        x = hash(key) % self._size # Получение хеша для элемента
-        if self._inner_list[x] is None: # Если по такому хэшу не создано списка
-            self._inner_list[x] = HashMap.Innerlinkedlist() # Создание списка
-            self._inner_list[x].insertatend(value, key) # Добавление элемента в этот список
-        else: # В противном случае проходимся по существуемому списку
-            a = self._inner_list[x]
-            b = a.head
-            while b:
-                if b.key == key: # Если такой ключ уже есть, то заменить значение
-                    b.value = value
+    def __setitem__(self, key, value):
+        hash_key = hash(key) % self._size
+        if self._inner_list[hash_key] is None:
+            self._inner_list[hash_key] = HashMap.Innerlinkedlist()
+            self._inner_list[hash_key].insertatend(value, key)
+        else:
+            node = self._inner_list[hash_key]
+            prev_node = node.head
+            while prev_node:
+                if prev_node.key == key:
+                    prev_node.value = value
                     return
-                b = b.next
-            a.insertatend(value, key) # Если не найден такой ключ, то добавить узел с этим значением и ключом
+                prev_node = prev_node.next
+            node.insertatend(value, key)
         self._leng += 1
-        if self._leng >= (0.8 * self._size): # Если массив заполнен на 80%, то увеличить вдвое
+        if self._leng >= (0.8 * self._size):
             self._size *=2
-            new_list = [None] *self._size # Новый массив, вдвое больше
-            for el in self._inner_list: # Проход по всем спискам
-                if el: # Проверка, что список не пустой
-                    a = el.head
-                    while a: # Проход по списку
-                        x = hash(a.key) % self._size
-                        if new_list[x] is None: # Если еще нет списка с таким значением хеша, то создаем
-                            new_list[x] = HashMap.Innerlinkedlist()
-                            new_list[x].insertatend(a.value, a.key)
-                        else: # В противном случае, проходимся по списку, и записываем значенмя в новый список
-                            b = new_list[x]
-                            c = b.head
-                            while c:
-                                if c.key == key:
-                                    c.value = value
-                                    return
-                                c = c.next
-                            b.insertatend(value, key)
-                        a = a.next
-            self._inner_list = new_list # Перезаписываем новый в переменную старого списка
+            new_list = [None] *self._size
+            for elem_node in self._inner_list:
+                if elem_node:
+                    node = elem_node.head
+                    set(node, new_list, key, value)
+            self._inner_list = new_list
 
-    def __delitem__(self, key): # Удаление элемента из массива по ключу и его уменьшение
-        for el in self._inner_list: # Проход по массиву
-            if el: # Если элемент массива не пустой
-                if len(el)>0: # Проверка длины списка на месте этого элемента
-                    el.deletkey(key) # Если есть список, то удаляем по ключу элемент
+    def set(self, node, new_list, key, value):
+        """
+        helping method __setitem__
+        """
+        while node:
+            hash_key = hash(node.key) % self._size
+            if new_list[hash_key] is None:
+                new_list[hash_key] = HashMap.Innerlinkedlist()
+                new_list[hash_key].insertatend(node.value, node.key)
+            else:
+                prev_node = new_list[hash_key]
+                pr_prev = prev_node.head
+                while pr_prev:
+                    if pr_prev.key == key:
+                        pr_prev.value = value
+                        return
+                    pr_prev = pr_prev.next
+                prev_node.insertatend(value, key)
+            node = node.next
+
+    def __delitem__(self, key):
+        for elem_node in self._inner_list:
+            if elem_node:
+                if len(elem_node)>0:
+                    elem_node.deletkey(key)
                 else:
-                    return KeyError("Нет элемента с таким ключом")
+                    raise KeyError("Нет элемента с таким ключом")
         self._leng -=1
         if self._leng < self._size * 0.35 and self._size >0:
             self._size = self._size//2
-            new_list = [None] * self._size  # Новый массив, вдвое больше
-            for el in self._inner_list:  # Проход по всем спискам
-                if el:  # Проверка, что список не пустой
-                    a = el.head
-                    while a:  # Проход по списку
-                        x = hash(a.key) % self._size
-                        if new_list[x] is None:  # Если еще нет списка с таким значением хеша, то создаем
-                            new_list[x] = HashMap.Innerlinkedlist()
-                            new_list[x].insertatend(a.value, a.key)
-                        else:  # В противном случае, на место элемента добавляем список с элемнтами
-                            b = new_list[x]
-                            b.insertatend(a.value, a.key)
-                        a = a.next
-            self._inner_list = new_list  # Перезаписываем новый в переменную старого списка
+            new_list = [None] * self._size
+            for elem_node in self._inner_list:
+                if elem_node:
+                    node = elem_node.head
+                    while node:
+                        hash_key = hash(node.key) % self._size
+                        if new_list[hash_key] is None:
+                            new_list[hash_key] = HashMap.Innerlinkedlist()
+                            new_list[hash_key].insertatend(node.value, node.key)
+                        else:
+                            list_n = new_list[hash_key]
+                            list_n.insertatend(node.value, node.key)
+                        node = node.next
+            self._inner_list = new_list
 
     def __len__(self):
         return self._size
