@@ -13,7 +13,7 @@ class Node:
     left = None
     right = None
 
-class TreeMap:
+class TreeMapRecurs:
     '''
     do the tree_map
     '''
@@ -55,7 +55,7 @@ class TreeMap:
         find min
         '''
         if node.left is not None:
-            return TreeMap.find_min_node(node.left)
+            return TreeMapRecurs.find_min_node(node.left)
         return node
 
     def __delitem__(self, key):
@@ -78,7 +78,7 @@ class TreeMap:
                 return node.left
             if node.left is None and node.right is not None:
                 return node.right
-            min_node = TreeMap.find_min_node(node.right)
+            min_node = TreeMapRecurs.find_min_node(node.right)
             node.key = min_node.key
             node.value = min_node.value
             node.right = inner_delitem(node.right, min_node.key)
