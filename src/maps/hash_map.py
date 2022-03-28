@@ -3,8 +3,8 @@ do the hash_map
 '''
 
 from dataclasses import dataclass
-
-class HashMap:
+from src.maps.base_map import BaseMap
+class HashMap(BaseMap):
     """
     to do class HashMap
     """
@@ -145,3 +145,7 @@ class HashMap:
 
     def __len__(self):
         return self._size
+
+    def __iter__(self):
+        for inner in self._inner_list:
+            yield from inner or []
