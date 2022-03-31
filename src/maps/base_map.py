@@ -2,7 +2,7 @@
 Abstract class
 """
 from abc import ABC, abstractmethod
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, List
 
 class BaseMap(ABC):
     """

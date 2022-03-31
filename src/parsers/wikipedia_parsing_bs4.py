@@ -4,23 +4,54 @@ get values from wiki site with bs4
 
 import requests
 from bs4 import BeautifulSoup
-from src.hash_map import HashMap
+from src.maps.tree_map import TreeMap
 
 WIKI_RANDOM = 'https://ru.wikipedia.org/wiki/Special:Random'
 WIKI_DOMAIN = "https://ru.wikipedia.org"
 
-response = requests.get(WIKI_RANDOM)
-soup = BeautifulSoup(response.text, 'lxml')
-urls = soup.find_all('a')
-link_wiki =[]
-for elem in urls:
-    link = elem.get("href")
-    if link is not None and '/wiki/' in link:
-        link_wiki.append(WIKI_DOMAIN + link)
+def get_byte(url):
+    """
+    mothod of byte_code
+    """
+    response = requests.get(url)
+    code = response.content
+    return code
 
-text= soup.find('div', class_ = "mw-parser-output")
-text = text.text
-words = list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), text.split())))
-for elem in words:
-    HashMap[elem] = 1
-    print(HashMap())
+def soup_of_code(code):
+    """
+    method soup
+    """
+    soup = BeautifulSoup(code, 'lxml')
+    return soup
+def all_utl(soup):
+    """
+    get all url
+    """
+    urls = soup.find_all('a')
+    link_wiki =[]
+    size = 0
+    for elem in urls:
+        link = elem.get("href")
+        if link is not None and '/wiki/' in link:
+            link_wiki.append(WIKI_DOMAIN + link)
+            size+=1
+        return [link_wiki, size]
+
+
+
+def put_text(soup, data_cls):
+    """
+    put words and count them
+    """
+    count = 0
+    text= soup.find('div', class_ = "mw-parser-output")
+    for url in text:
+        url = url.text
+        words = list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), url.split())))
+        for elem in words:
+            count+=1
+            if elem in data_cls:
+                data_cls[elem] +=1
+            else:
+                data_cls[elem] = 1
+    return count, data_cls
