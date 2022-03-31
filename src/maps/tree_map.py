@@ -42,7 +42,7 @@ class TreeMap(BaseMap):
                         break
                     node = node.right
                 elif key == node.key:
-                    node.val = val
+                    node.val +=1
                     break
 
     def __delitem__(self, key):
