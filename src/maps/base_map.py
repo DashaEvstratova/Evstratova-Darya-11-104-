@@ -2,8 +2,7 @@
 Abstract class
 """
 from abc import ABC, abstractmethod
-from typing import Iterable, Tuple, List
-from os import path
+from typing import Iterable, Tuple
 
 class BaseMap(ABC):
     """
@@ -38,15 +37,19 @@ class BaseMap(ABC):
         """
         method write
         """
-        for key, value in self:
-            pass
+        with open(path, 'w') as w_f:
+            for key, value in self:
+                w_f.write(str(key) + " " + str(value) + "\n")
     @classmethod
     def read(cls, path:str) -> 'BasMap':
         """
         method read
         """
         my_obj = cls()
-        open_file = ...
-        for key, value in open_file:
-            my_obj[key] = value
-        return my_obj
+        with open(path, 'r') as open_file:
+            string_words = open_file.readline()
+            while string_words:
+                node = string_words.split()
+                my_obj[node[0]] = int(node[1])
+                string_words = open_file.readline()
+            open_file.close()
