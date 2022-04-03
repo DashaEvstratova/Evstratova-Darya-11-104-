@@ -48,5 +48,8 @@ def put_text(soup, data_cls):
     text = text.text
     words= list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), text.split())))
     for elem in words:
-        data_cls[elem] = 1
+        if elem in data_cls:
+            data_cls[elem] = data_cls[elem] +1
+        else:
+            data_cls[elem] = 1
     return data_cls

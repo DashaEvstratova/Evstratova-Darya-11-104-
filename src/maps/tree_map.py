@@ -23,27 +23,18 @@ class TreeMap(BaseMap):
         self.size = 0
 
     def __setitem__(self, key, val):
-        if self.root is None:
-            self.root = Node(key, val)
-            self.size+=1
-        else:
-            node = self.root
-            while (not node.left) and (not node.right):
-                if key < node.key:
-                    if node.left is None:
-                        node.left = Node(key, val)
-                        self.size += 1
-                        break
-                    node = node.left
-                elif key > node.key:
-                    if node.right is None:
-                        node.right = Node(key, val)
-                        self.size += 1
-                        break
-                    node = node.right
-                elif key == node.key:
-                    node.val +=1
-                    break
+        def inner_setitem(node):
+            if node is None:
+                return Node(key, val)
+            if key == node.key:
+                node.val = val
+            elif key < node.key:
+                node.left = inner_setitem(node.left)
+            else:
+                node.right = inner_setitem(node.right)
+            return node
+
+        self.root = inner_setitem(self.root)
 
     @staticmethod
     def find_min_node(node):
