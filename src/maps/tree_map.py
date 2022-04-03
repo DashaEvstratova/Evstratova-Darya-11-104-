@@ -46,7 +46,32 @@ class TreeMap(BaseMap):
                     break
 
     def __delitem__(self, key):
-        pass
+        '''
+                recursive deletion
+                '''
+
+        def inner_delitem(node, key):
+            if node is None:
+                raise KeyError
+            if key < node.key:
+                node.left = inner_delitem(node.left, key)
+                return node
+            if key > node.key:
+                result = inner_delitem(node.right, key)
+                node.right = result
+                return node
+            if node.left is None and node.right is None:
+                return None
+            if node.left is not None and node.right is None:
+                return node.left
+            if node.left is None and node.right is not None:
+                return node.right
+            min_node = TreeMapRecurs.find_min_node(node.right)
+            node.key = min_node.key
+            node.value = min_node.value
+            node.right = inner_delitem(node.right, min_node.key)
+            return node
+        self.root = inner_delitem(self.root, key)
 
     def __getitem__(self, key):
         if self.root is None:
