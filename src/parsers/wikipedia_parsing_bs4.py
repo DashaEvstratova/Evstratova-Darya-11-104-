@@ -11,7 +11,7 @@ WIKI_DOMAIN = "https://ru.wikipedia.org"
 
 def get_byte(url):
     """
-    mothod of byte_code
+    mothod to get byte_code
     """
     response = requests.get(url)
     code = response.content
@@ -19,8 +19,9 @@ def get_byte(url):
 
 def soup_of_code(code):
     """
-    method soup
+    method get html cod
     """
+    code = code.decode("utf8")
     soup = BeautifulSoup(code, 'lxml')
     return soup
 def all_utl(soup):
@@ -35,7 +36,7 @@ def all_utl(soup):
         if link is not None and '/wiki/' in link:
             link_wiki.append(WIKI_DOMAIN + link)
             size+=1
-        return [link_wiki, size]
+    return [link_wiki, size]
 
 
 
@@ -50,8 +51,5 @@ def put_text(soup, data_cls):
         words = list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), url.split())))
         for elem in words:
             count+=1
-            if elem in data_cls:
-                data_cls[elem] +=1
-            else:
-                data_cls[elem] = 1
+            data_cls[elem] = 1
     return count, data_cls

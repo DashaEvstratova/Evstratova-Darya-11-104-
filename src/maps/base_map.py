@@ -41,7 +41,7 @@ class BaseMap(ABC):
             for key, value in self:
                 w_f.write(str(key) + " " + str(value) + "\n")
     @classmethod
-    def read(cls, path:str) -> 'BasMap':
+    def read(cls, path:str) -> 'BaseMap':
         """
         method read
         """
@@ -53,3 +53,4 @@ class BaseMap(ABC):
                 my_obj[node[0]] = int(node[1])
                 string_words = open_file.readline()
             open_file.close()
+
