@@ -35,7 +35,6 @@ class TreeMap(BaseMap):
             return node
 
         self.root = inner_setitem(self.root)
-
     @staticmethod
     def find_min_node(node):
         '''
@@ -87,6 +86,7 @@ class TreeMap(BaseMap):
                 node = node.right
             else:
                 return node.val
+
     def __iter__(self):
         def iter_node(node):
             if node is not None:
@@ -94,5 +94,6 @@ class TreeMap(BaseMap):
                 yield from iter_node(node.left)
                 yield from iter_node(node.right)
         yield from iter_node(self.root)
+
     def __len__(self):
         return self.size

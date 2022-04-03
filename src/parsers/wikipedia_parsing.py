@@ -38,7 +38,7 @@ def wiki_parser(url:str, base_path:str, map_type: type = TreeMap) -> List[str]:
 
     with open(base_path + use, 'r', encoding='utf-8')as file:
         new_ = all_utl(soup_of_code(file.read()))
-        size = 10
+        size = 2
         file.close()
     for i in range(size):
         write_in(new_[i], base_path + '/url', map_type(), i+1)
