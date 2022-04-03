@@ -23,7 +23,7 @@ def write_in(url:str, get_path:str, use_map, number) -> None:
         with open(new_path + '/content.xml', 'rb') as file:
             byte_code = file.read()
     soup = soup_of_code(byte_code)
-    count, data = put_text(soup, use_map)
+    data = put_text(soup, use_map)
     data.write(new_path + '/words.txt')
 
 def wiki_parser(url:str, base_path:str, map_type: type = TreeMap) -> List[str]:
@@ -35,9 +35,10 @@ def wiki_parser(url:str, base_path:str, map_type: type = TreeMap) -> List[str]:
 
     write_in(url, base_path + '/url', map_type(), 0)
     use = '/url/0/content.xml'
+
     with open(base_path + use, 'r', encoding='utf-8')as file:
-        new_ = all_utl(soup_of_code(file.read()))[0]
-        size = all_utl(soup_of_code(file.read()))[1]
+        new_ = all_utl(soup_of_code(file.read()))
+        size = 10
         file.close()
     for i in range(size):
         write_in(new_[i], base_path + '/url', map_type(), i+1)

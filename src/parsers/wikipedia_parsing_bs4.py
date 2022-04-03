@@ -33,10 +33,10 @@ def all_utl(soup):
     size = 0
     for elem in urls:
         link = elem.get("href")
-        if link is not None and '/wiki/' in link:
+        if link is not None and '/wiki/' in link and size < 11:
             link_wiki.append(WIKI_DOMAIN + link)
             size+=1
-    return [link_wiki, size]
+    return link_wiki
 
 
 
@@ -44,13 +44,9 @@ def put_text(soup, data_cls):
     """
     put words and count them
     """
-    count = 0
-
     text= soup.find('div', class_ = "mw-parser-output")
-    for url in text:
-        url = url.text
-        words = list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), url.split())))
-        for elem in words:
-            count+=1
-            data_cls[elem] = 1
-        return count, data_cls
+    text = text.text
+    words= list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), text.split())))
+    for elem in words:
+        data_cls[elem] = 1
+    return data_cls
