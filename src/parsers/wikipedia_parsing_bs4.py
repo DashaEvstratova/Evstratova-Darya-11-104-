@@ -4,7 +4,7 @@ get values from wiki site with bs4
 
 import requests
 from bs4 import BeautifulSoup
-from src.maps.tree_map import TreeMap
+
 
 WIKI_RANDOM = 'https://ru.wikipedia.org/wiki/Special:Random'
 WIKI_DOMAIN = "https://ru.wikipedia.org"
@@ -45,6 +45,8 @@ def put_text(soup, data_cls):
     put words and count them
     """
     text= soup.find('div', class_ = "mw-parser-output")
+    if text is None:
+        return {}
     text = text.text
     words= list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), text.split())))
     for elem in words:

@@ -3,8 +3,8 @@ get values from wiki site
 """
 import os.path
 from typing import List
-from src.maps.tree_map import TreeMap
 from wikipedia_parsing_bs4 import get_byte, soup_of_code, put_text, all_utl
+from src.maps.tree_map import TreeMap
 
 def write_in(url:str, get_path:str, use_map, number) -> None:
     """

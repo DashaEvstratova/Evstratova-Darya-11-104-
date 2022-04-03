@@ -95,5 +95,18 @@ class TreeMap(BaseMap):
                 yield from iter_node(node.right)
         yield from iter_node(self.root)
 
+    def __contains__(self, item):
+        def inner(node):
+            if node is None:
+                return False
+            if node.key == item:
+                return True
+
+            if item < node.key:
+                return inner(node.left)
+            return inner(node.right)
+
+        return inner(self.root)
+
     def __len__(self):
         return self.size
