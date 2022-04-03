@@ -45,11 +45,19 @@ class TreeMap(BaseMap):
                     node.val +=1
                     break
 
+    @staticmethod
+    def find_min_node(node):
+        '''
+        find min
+        '''
+        if node.left is not None:
+            return TreeMap.find_min_node(node.left)
+        return node
+
     def __delitem__(self, key):
         '''
-                recursive deletion
-                '''
-
+        recursive deletion
+        '''
         def inner_delitem(node, key):
             if node is None:
                 raise KeyError
@@ -66,9 +74,9 @@ class TreeMap(BaseMap):
                 return node.left
             if node.left is None and node.right is not None:
                 return node.right
-            min_node = TreeMapRecurs.find_min_node(node.right)
+            min_node = TreeMap.find_min_node(node.right)
             node.key = min_node.key
-            node.value = min_node.value
+            node.val = min_node.val
             node.right = inner_delitem(node.right, min_node.key)
             return node
         self.root = inner_delitem(self.root, key)
@@ -91,7 +99,7 @@ class TreeMap(BaseMap):
     def __iter__(self):
         def iter_node(node):
             if node is not None:
-                yield node.key, node.value
+                yield node.key, node.val
                 yield from iter_node(node.left)
                 yield from iter_node(node.right)
         yield from iter_node(self.root)

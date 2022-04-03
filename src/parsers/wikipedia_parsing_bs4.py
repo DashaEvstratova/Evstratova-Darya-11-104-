@@ -21,9 +21,9 @@ def soup_of_code(code):
     """
     method get html cod
     """
-    code = code.decode("utf8")
     soup = BeautifulSoup(code, 'lxml')
     return soup
+
 def all_utl(soup):
     """
     get all url
@@ -45,6 +45,7 @@ def put_text(soup, data_cls):
     put words and count them
     """
     count = 0
+
     text= soup.find('div', class_ = "mw-parser-output")
     for url in text:
         url = url.text
@@ -52,4 +53,4 @@ def put_text(soup, data_cls):
         for elem in words:
             count+=1
             data_cls[elem] = 1
-    return count, data_cls
+        return count, data_cls

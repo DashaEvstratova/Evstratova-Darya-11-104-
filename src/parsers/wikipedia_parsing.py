@@ -33,13 +33,14 @@ def wiki_parser(url:str, base_path:str, map_type: type = TreeMap) -> List[str]:
     if not os.path.exists(base_path + '/url'):
         os.mkdir(base_path + '/url')
 
-    write_in(url, base_path + '/url', map_type, 0)
+    write_in(url, base_path + '/url', map_type(), 0)
     use = '/url/0/content.xml'
     with open(base_path + use, 'r', encoding='utf-8')as file:
         new_ = all_utl(soup_of_code(file.read()))[0]
-    size = all_utl(soup_of_code(file.read()))[1]
+        size = all_utl(soup_of_code(file.read()))[1]
+        file.close()
     for i in range(size):
-        write_in(new_[i], base_path + '/url', map_type, i+1)
+        write_in(new_[i], base_path + '/url', map_type(), i+1)
 
 if __name__ == "__main__":
     WIKI_RANDOM = 'https://ru.wikipedia.org/wiki/Special:Random'
