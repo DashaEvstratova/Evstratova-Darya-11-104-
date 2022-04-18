@@ -2,48 +2,52 @@
 get values from wiki site
 """
 import os.path
+import time
 from typing import List
-from wikipedia_parsing_bs4 import get_byte, soup_of_code, put_text, all_utl
+from concurrent.futures import ThreadPoolExecutor
+from wikipedia_parsing_bs4 import get_byte, soup_of_code, put_text, get_urls, WIKI_RANDOM, PATH
 from src.maps.tree_map import TreeMap
 
-def write_in(url:str, get_path:str, use_map, number) -> None:
-    """
-    method put in file
-    """
-    directory = str(number)
-    if not os.path.exists(get_path +'/'+directory):
-        os.mkdir(get_path + '/' + directory)
-    new_path = get_path + '/' + directory
 
-    if os.path.exists(get_path +'/'+directory):
+def wiki_parser(url: str, base_path: str, map_type: type = TreeMap, number=0) -> List[str]:
+    """method from url to file"""
+    working_path = base_path + '/url'
+    if not os.path.exists(working_path):
+        os.mkdir(working_path)
+
+    page_path = working_path + '/' + f'page_{number}'
+    if not os.path.exists(page_path):
+        os.mkdir(page_path)
+
+    if not os.path.exists(page_path + '/content.xml'):
         byte_code = get_byte(url)
-        with open(new_path + '/content.xml', 'wb') as file:
+        with open(page_path + '/content.xml', 'wb') as file:
             file.write(byte_code)
     else:
-        with open(new_path + '/content.xml', 'rb') as file:
+        with open(page_path + '/content.xml', 'rb') as file:
             byte_code = file.read()
+
     soup = soup_of_code(byte_code)
-    data = put_text(soup, use_map)
-    data.write(new_path + '/words.txt')
+    data = put_text(soup, map_type)
+    data.write(page_path + '/words.txt')
 
-def wiki_parser(url:str, base_path:str, map_type: type = TreeMap) -> List[str]:
-    """
-    method from url to file
-    """
-    if not os.path.exists(base_path + '/url'):
-        os.mkdir(base_path + '/url')
+    new_urls = get_urls(soup)
+    return new_urls
 
-    write_in(url, base_path + '/url', map_type(), 0)
-    use = '/url/0/content.xml'
 
-    with open(base_path + use, 'r', encoding='utf-8')as file:
-        new_ = all_utl(soup_of_code(file.read()))
-        size = 2
-        file.close()
-    for i in range(size):
-        write_in(new_[i], base_path + '/url', map_type(), i+1)
+def parse_depth(url: str, path: str, depth=2):
+    urls = set(wiki_parser(url, path))
+    new_urls = []
+    page_number = 1
+    for _ in range(depth - 1):
+        with ThreadPoolExecutor(4) as thread:
+            for new_url in urls:
+                new_urls += thread.submit(wiki_parser, new_url, path, number=page_number).result()
+                page_number += 1
+            urls = set(new_urls) - urls
+
 
 if __name__ == "__main__":
-    WIKI_RANDOM = 'https://ru.wikipedia.org/wiki/Special:Random'
-    WIKI_DOMAIN = "https://ru.wikipedia.org"
-    wiki_parser(WIKI_RANDOM, "C:\\Users\\dasha\\PycharmProjects\\Evstratova-Darya-11-104")
+    start = time.time()
+    parse_depth(WIKI_RANDOM, PATH)
+    print(time.time() - start)
