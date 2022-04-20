@@ -53,7 +53,7 @@ def put_text(soup, data_cls):
     data = data_cls()
     text = soup.find('div', class_="mw-parser-output")
     if text is None:
-        return {}
+        return data
     text = text.text
     words = list(map(lambda s: s.lower().strip(), filter(lambda s: s.isalpha(), text.split())))
     for elem in words:

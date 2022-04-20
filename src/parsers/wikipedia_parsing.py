@@ -3,19 +3,20 @@ get values from wiki site
 """
 import os.path
 import time
+import uuid
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from wikipedia_parsing_bs4 import get_byte, soup_of_code, put_text, get_urls, WIKI_RANDOM, PATH
 from src.maps.tree_map import TreeMap
 
 
-def wiki_parser(url: str, base_path: str, map_type: type = TreeMap, number=0) -> List[str]:
+def wiki_parser(url: str, base_path = PATH, map_type: type = TreeMap) -> List[str]:
     """method from url to file"""
     working_path = base_path + '/url'
     if not os.path.exists(working_path):
         os.mkdir(working_path)
 
-    page_path = working_path + '/' + f'page_{number}'
+    page_path = working_path + '/' + uuid.uuid4().hex
     if not os.path.exists(page_path):
         os.mkdir(page_path)
 
@@ -37,17 +38,16 @@ def wiki_parser(url: str, base_path: str, map_type: type = TreeMap, number=0) ->
 
 def parse_depth(url: str, path: str, depth=2):
     urls = set(wiki_parser(url, path))
-    new_urls = []
-    page_number = 1
+    next_step = []
     for _ in range(depth - 1):
         with ThreadPoolExecutor(4) as thread:
-            for new_url in urls:
-                new_urls += thread.submit(wiki_parser, new_url, path, number=page_number).result()
-                page_number += 1
-            urls = set(new_urls) - urls
+            new_urls = thread.map(wiki_parser, urls)
+            for new_url in new_urls:
+                next_step += new_url
+            urls = set(next_step) - urls
 
 
 if __name__ == "__main__":
     start = time.time()
-    parse_depth(WIKI_RANDOM, PATH)
+    parse_depth(WIKI_RANDOM, PATH, 3)
     print(time.time() - start)
