@@ -66,13 +66,13 @@ class HashMap(BaseMap):
     def __getitem__(self, key):
         linked_list = self._inner_list[hash(key) % self._size]
         if linked_list is None:
-            raise KeyError("Нет элемента с таким ключом")
+            return None
         node = linked_list.head
         while node:
             if node.key == key:
                 return node.value
             node = node.next
-        raise KeyError("Нет элемента с таким ключом")
+        return None
 
     def __setitem__(self, key, value):
         hash_key = hash(key) % self._size
@@ -144,7 +144,7 @@ class HashMap(BaseMap):
             self._inner_list = new_list
 
     def __len__(self):
-        return self._size
+        return self._leng
 
     def __iter__(self):
         for inner in self._inner_list:
