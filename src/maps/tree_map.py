@@ -90,8 +90,8 @@ class TreeMap(BaseMap):
     def __iter__(self):
         def iter_node(node):
             if node is not None:
-                yield node.key, node.val
                 yield from iter_node(node.left)
+                yield node.key, node.val
                 yield from iter_node(node.right)
         yield from iter_node(self.root)
 

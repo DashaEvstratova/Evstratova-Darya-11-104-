@@ -18,6 +18,12 @@ class HashMap(BaseMap):
             self.key = key
             self.value = value
 
+        def __iter__(self):
+            yield self.key, self.value
+
+            if self.next is not None:
+                yield from self.next
+
     @dataclass
     class Innerlinkedlist:
         """
@@ -57,6 +63,10 @@ class HashMap(BaseMap):
 
         def __len__(self):
             return self.length
+
+        def __iter__(self):
+            if self.head is not None:
+                yield from self.head
 
     def __init__(self, _size=10):
         self._inner_list = [None] *_size
