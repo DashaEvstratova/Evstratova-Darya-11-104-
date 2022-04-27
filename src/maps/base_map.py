@@ -3,118 +3,131 @@ Abstract class
 """
 from abc import ABC, abstractmethod
 from typing import Iterable, Tuple
+from typing import Any
+
 
 class BaseMap(ABC):
+    """Abstract class with interface for all Maps"""
 
-    """general class"""
     @abstractmethod
     def __setitem__(self, key, value) -> None:
-        """method __setitem__"""
+        pass
 
     @abstractmethod
     def __getitem__(self, item) -> int:
-        """method __getitem__"""
+        pass
 
     @abstractmethod
     def __delitem__(self, key) -> None:
-        """method __delitem__"""
+        pass
 
     @abstractmethod
     def __len__(self) -> int:
-        """method __len__"""
+        pass
 
     @abstractmethod
     def __iter__(self) -> Iterable[Tuple[str, int]]:
-        """method __iter__"""
+        pass
+
+    def write(self, path: str) -> None:
+        """A method to write Map into file"""
+
+        with open(path, 'w', encoding='utf-8') as write_file:
+            for key, value in self:  # iterating in map
+                write_file.write(f'{key}    {value}\n')
+
+    @classmethod
+    def read(cls, path: str) -> 'BaseMap':
+        """A method to read keys and its values and write it into Map"""
+        my_obj = cls()  # makin class object by using callable class
+
+        with open(path, 'r', encoding='utf-8') as file:
+            line = file.readline()
+            while line:
+                key, value = line.split()  # making list of two elements from line(key and value)
+                my_obj[key] = int(value)
+                line = file.readline()
+
+        return my_obj
 
     def __contains__(self, key: str) -> bool:
-        """method __contains__"""
+        """A method to check if key features in map"""
+        for data_key, _ in self:
+            if data_key == key:
+                return True
+        return False
 
-    def __eq__(self, other: 'BaseMap') -> bool:
-        """method __eq__"""
-        if self.__len__() != other.__len__():
-            return False
-        for element in self:
-            if not other.__contains__(element[0]):
-                return False
-            if other[element[0]] != element[1]:
-                return False
-        return True
+    def __eq__(self, other) -> bool:
+        lst_self = sorted(list(self))
+        lst_other = sorted(list(other))
+        if lst_self == lst_other:
+            return True
+        return False
 
     def __bool__(self) -> bool:
-        """method __bool__"""
-        if len(self) == 0:
-            return False
-        return True
+        return len(self) != 0
 
     def items(self) -> Iterable[Tuple[str, int]]:
-        """method items"""
+        """A method to return (key, value) pairs"""
         yield from self
 
     def values(self) -> Iterable[int]:
-        """method values"""
+        """A method to return all the values of map"""
         return (item[1] for item in self)
 
     def keys(self) -> Iterable[str]:
-        """method keys"""
+        """A method to return all the keys from map"""
         return (item[0] for item in self)
 
     @classmethod
     def fromkeys(cls, iterable, value=None) -> 'BaseMap':
-        """fromkeys"""
-        my_class = cls()
+        """A method to make new map with keys and default values"""
+        new_map = cls()
         for key in iterable:
-            my_class[key] = value
-        return iterable
+            new_map[key] = value
+        return new_map
 
     def update(self, other=None) -> None:
-        """update"""
-        if other is not None:
-            if hasattr(other, 'keys'):
-                for key in other.keys():
-                    self[key] = other[key]
-            else:
+        """A method to update the map with values from another map"""
+        try:
+            all_keys = other.keys()
+            for key in all_keys:
+                self[key] = other[key]
+        except AttributeError:
+            if other is not None:
                 for key, value in other:
                     self[key] = value
 
-    def get(self, key, default=None):
-        """get"""
-        if self[key]:
+    def get(self, key: str, default=None) -> Any:
+        """A method to get value by key"""
+        if key in self:
             return self[key]
         return default
 
-    def pop(self, key, *args):
-        """pop"""
-        if self[key]:
-            node = self[key]
-            self.__delitem__(key)
-            return node
-        if args:
-            return args[0]
+    def pop(self, key: str, default=None) -> Any:
+        """A method to delete element by key and return its value"""
+        if key in self:
+            value = self[key]
+            del self[key]
+            return value
+        if default:
+            return default
         raise KeyError
 
-    def popitem(self):
+    def popitem(self) -> Tuple[str, int]:
         """popitem"""
-        if not self.__bool__:
-            for element in self:
-                last = element
-            self.__delitem__(last)
-            return (last, self[last])
+        if self:
+            inner_map = list(self)
+            del self[inner_map[-1][0]]
+            return inner_map[-1][0], inner_map[-1][1]
         raise KeyError
 
-    def setdefault(self, key, default=None):
-        """setdefault"""
-        for element in self:
-            if element[0] == key:
-                return element[1]
+    def setdefault(self, key: str, default=None) -> int:
+        """setdefalult"""
+        if key in self:
+            return self[key]
         self[key] = default
         return default
-
-    def clear(self):
-        """clear"""
-        for key, _ in self:
-            self.__delitem__(key)
-        return self
 
     def write(self, path:str) -> None:
         """method write"""
