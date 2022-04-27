@@ -58,7 +58,7 @@ def parse_depth(url: str, path: str, depth=2):
     next_step = []
     # Цикл для счета потоков
     for _ in range(depth - 1):
-        # Создание четырех потоков одноаременно
+        # Создание четырех потоков одновременно
         with ThreadPoolExecutor(4) as thread:
             # Создаем список новых ссылок
             new_urls = thread.map(wiki_parser, urls)
@@ -69,8 +69,34 @@ def parse_depth(url: str, path: str, depth=2):
             # добавляются ссылки и удаляютсся дубликаты
             urls = set(next_step) - urls
 
+def merging_files(path = PATH):
+    path = PATH + '/url/'
+    data = {}
+    with os.scandir(path) as entries:
+        for entry in entries:
+            file_name = path + entry.name + '/words.txt'
+            current_folder = {}
+            with open(file_name, 'r', encoding='utf8') as fn:
+                line_read = fn.readline().strip().split(' ')
+                while len(line_read)>1:
+                    current_folder[line_read[0]] = int(line_read[1])
+                    line_read = fn.readline().strip().split(' ')
+                for elem in current_folder:
+                    if elem not in data:
+                        data[elem] = current_folder[elem]
+                    else:
+                        data[elem] = current_folder[elem] + data[elem]
+    path = PATH+'/result.txt'
+    with open(path, 'w', encoding='utf8') as w_f:
+        for key in data:
+            w_f.write(str(key) + " " + str(data[key]) + "\n")
 
 if __name__ == "__main__":
     start = time.time()
-    parse_depth(WIKI_RANDOM, PATH, 1)
+    merging_files()
+    print(time.time()- start)
+    '''
+    start = time.time()
+    parse_depth(WIKI_RANDOM, PATH)
     print(time.time() - start)
+    '''
