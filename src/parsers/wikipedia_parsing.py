@@ -109,4 +109,4 @@ if __name__ == "__main__":
     print(time.time() - start)
     start = time.time()
     merging_files()
-    print(time.time()- start)
+    print(time.time() - start)
