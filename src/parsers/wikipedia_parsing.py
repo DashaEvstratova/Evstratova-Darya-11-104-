@@ -18,7 +18,6 @@ def wiki_parser(url: str, base_path = PATH, map_type: type = TreeMap) -> List[st
     if not os.path.exists(working_path):
         # Создаем папку для ссылок
         os.mkdir(working_path)
-
     # Директория куда будет записаны обработанные ссылки
     page_path = working_path + '/' + uuid.uuid4().hex
     # Если эту ссылку еще не обработали
@@ -70,33 +69,44 @@ def parse_depth(url: str, path: str, depth=2):
             urls = set(next_step) - urls
 
 def merging_files(path = PATH):
+    '''merge all files into one'''
+    # Директория, где лежат обработанные ссылки
     path = PATH + '/url/'
+    # Словарь, где будут все слова будут
     data = {}
+    # Достаем список названий всех папок в папке url
     with os.scandir(path) as entries:
+        # Проходимся по каждой папке
         for entry in entries:
+            # Прописываем путь к папке
             file_name = path + entry.name + '/words.txt'
+            # Временный словарь, для записиси слов из текущей папки
             current_folder = {}
-            with open(file_name, 'r', encoding='utf8') as fn:
-                line_read = fn.readline().strip().split(' ')
+            # Читаем и записываем в словарь слова
+            with open(file_name, 'r', encoding='utf8') as filen:
+                line_read = filen.readline().strip().split(' ')
                 while len(line_read)>1:
                     current_folder[line_read[0]] = int(line_read[1])
-                    line_read = fn.readline().strip().split(' ')
-                for elem in current_folder:
+                    line_read = filen.readline().strip().split(' ')
+                # Соединяем временный словарь с основным
+                for elem, key in current_folder.items():
+                    # Если такого слова еще не было, то добавляем
                     if elem not in data:
-                        data[elem] = current_folder[elem]
+                        data[elem] = key
+                    # В противном случае увеличиваем счетчик
                     else:
-                        data[elem] = current_folder[elem] + data[elem]
+                        data[elem] = key + data[elem]
+    # Путь, где будет хранится результат
     path = PATH+'/result.txt'
+    # Записываем результат
     with open(path, 'w', encoding='utf8') as w_f:
-        for key in data:
-            w_f.write(str(key) + " " + str(data[key]) + "\n")
+        for key, value in data.items():
+            w_f.write(str(key) + " " + str(value) + "\n")
 
 if __name__ == "__main__":
     start = time.time()
-    merging_files()
-    print(time.time()- start)
-    '''
-    start = time.time()
     parse_depth(WIKI_RANDOM, PATH)
     print(time.time() - start)
-    '''
+    start = time.time()
+    merging_files()
+    print(time.time()- start)
