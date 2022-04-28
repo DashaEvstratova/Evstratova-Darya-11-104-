@@ -7,7 +7,7 @@ from typing import Any
 
 
 class BaseMap(ABC):
-    """Abstract class with interface for all Maps"""
+    '''Abstract class for Maps'''
 
     @abstractmethod
     def __setitem__(self, key, value) -> None:
@@ -29,29 +29,8 @@ class BaseMap(ABC):
     def __iter__(self) -> Iterable[Tuple[str, int]]:
         pass
 
-    def write(self, path: str) -> None:
-        """A method to write Map into file"""
-
-        with open(path, 'w', encoding='utf-8') as write_file:
-            for key, value in self:  # iterating in map
-                write_file.write(f'{key}    {value}\n')
-
-    @classmethod
-    def read(cls, path: str) -> 'BaseMap':
-        """A method to read keys and its values and write it into Map"""
-        my_obj = cls()  # makin class object by using callable class
-
-        with open(path, 'r', encoding='utf-8') as file:
-            line = file.readline()
-            while line:
-                key, value = line.split()  # making list of two elements from line(key and value)
-                my_obj[key] = int(value)
-                line = file.readline()
-
-        return my_obj
-
     def __contains__(self, key: str) -> bool:
-        """A method to check if key features in map"""
+        '''A method to check'''
         for data_key, _ in self:
             if data_key == key:
                 return True
@@ -68,27 +47,27 @@ class BaseMap(ABC):
         return len(self) != 0
 
     def items(self) -> Iterable[Tuple[str, int]]:
-        """A method to return (key, value) pairs"""
+        '''D.items() -> a set-like object providing a view on D's items'''
         yield from self
 
     def values(self) -> Iterable[int]:
-        """A method to return all the values of map"""
+        '''D.values() -> an object providing a view on D's values'''
         return (item[1] for item in self)
 
     def keys(self) -> Iterable[str]:
-        """A method to return all the keys from map"""
+        '''D.keys() -> a set-like object providing a view on D's keys'''
         return (item[0] for item in self)
 
     @classmethod
     def fromkeys(cls, iterable, value=None) -> 'BaseMap':
-        """A method to make new map with keys and default values"""
+        '''Create a new dictionary with keys from iterable and values set to value.'''
         new_map = cls()
         for key in iterable:
             new_map[key] = value
         return new_map
 
     def update(self, other=None) -> None:
-        """A method to update the map with values from another map"""
+        '''Update D from dict/iterable E and F'''
         try:
             all_keys = other.keys()
             for key in all_keys:
@@ -99,13 +78,13 @@ class BaseMap(ABC):
                     self[key] = value
 
     def get(self, key: str, default=None) -> Any:
-        """A method to get value by key"""
+        '''Return the value for key if key is in the dictionary, else default.'''
         if key in self:
             return self[key]
         return default
 
     def pop(self, key: str, default=None) -> Any:
-        """A method to delete element by key and return its value"""
+        '''remove specified key and return the corresponding value.'''
         if key in self:
             value = self[key]
             del self[key]
@@ -115,7 +94,7 @@ class BaseMap(ABC):
         raise KeyError
 
     def popitem(self) -> Tuple[str, int]:
-        """popitem"""
+        '''Remove and return a (key, value) pair as a 2-tuple.'''
         if self:
             inner_map = list(self)
             del self[inner_map[-1][0]]
@@ -123,21 +102,21 @@ class BaseMap(ABC):
         raise KeyError
 
     def setdefault(self, key: str, default=None) -> int:
-        """setdefalult"""
+        ''' Insert key with a value of default if key is not in the dictionary.'''
         if key in self:
             return self[key]
         self[key] = default
         return default
 
     def write(self, path:str) -> None:
-        """method write"""
+        '''method write'''
         with open(path, 'w', encoding='utf8') as w_f:
             for key, value in self:
                 w_f.write(str(key) + " " + str(value) + "\n")
 
     @classmethod
     def read(cls, path:str) -> 'BaseMap':
-        """method read"""
+        '''method read'''
         my_obj = cls()
         with open(path, 'r', encoding='utf8') as open_file:
             string_words = open_file.readline()

@@ -86,7 +86,7 @@ class TreeMap(BaseMap):
                 node = node.right
             else:
                 return node.val
-    
+
     def __iter__(self):
         def iter_node(node):
             if node is not None:
@@ -112,5 +112,6 @@ class TreeMap(BaseMap):
         return self.size
 
     def clear(self):
+        '''map cleaning method'''
         self.root = None
         self.size = 0
