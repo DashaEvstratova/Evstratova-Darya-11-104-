@@ -3,7 +3,7 @@ tests for tree_map
 """
 
 import unittest
-from src.tree_map import TreeMap
+from src.maps.tree_map import TreeMap
 
 class SampleCase(unittest.TestCase):
     """
@@ -23,9 +23,9 @@ class SampleCase(unittest.TestCase):
         """
         test of __setitem__
         """
-        self.treemap[4] = 42
-        self.treemap[4] = 67
-        self.assertEqual(self.treemap[4], 67)
+        self.treemap[4] = 1
+        self.treemap[4] = 1
+        self.assertEqual(self.treemap[4], 1)
 
 if __name__=='__main__':
     unittest.main()
