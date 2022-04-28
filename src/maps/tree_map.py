@@ -98,7 +98,7 @@ class TreeMap(BaseMap):
     def __contains__(self, item):
         def inner(node):
             if node is None:
-                return KeyError
+                return False
             if node.key == item:
                 return True
 
