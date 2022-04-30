@@ -25,6 +25,7 @@ class TreeMap(BaseMap):
     def __setitem__(self, key, val):
         def inner_setitem(node):
             if node is None:
+                self.size +=1
                 return Node(key, val)
             if key == node.key:
                 node.val = val
@@ -59,10 +60,13 @@ class TreeMap(BaseMap):
                 node.right = result
                 return node
             if node.left is None and node.right is None:
+                self.size-=1
                 return None
             if node.left is not None and node.right is None:
+                self.size -=1
                 return node.left
             if node.left is None and node.right is not None:
+                self.size -=1
                 return node.right
             min_node = TreeMap.find_min_node(node.right)
             node.key = min_node.key
@@ -73,16 +77,16 @@ class TreeMap(BaseMap):
 
     def __getitem__(self, key):
         if self.root is None:
-            return False
+            raise KeyError
         node = self.root
         while node:
             if key < node.key:
                 if node.left is None:
-                    return False
+                    raise KeyError
                 node = node.left
             elif key > node.key:
                 if node.right is None:
-                    return False
+                    raise KeyError
                 node = node.right
             else:
                 return node.val
@@ -101,7 +105,6 @@ class TreeMap(BaseMap):
                 return False
             if node.key == item:
                 return True
-
             if item < node.key:
                 return inner(node.left)
             return inner(node.right)
