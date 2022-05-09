@@ -41,7 +41,7 @@ def get_urls(soup):
         link = str(elem.get("href"))
         # Поверка что сссылка на страницу вики
         if '/wiki/' in link:
-            url = WIKI_DOMAIN + link
+            url = ''.join([WIKI_DOMAIN, link])
             # Если ссылка рабочая, то дабавляем в список ссылок
             if valid_url(url):
                 link_wiki.append(url)
