@@ -68,7 +68,8 @@ def parse_depth(url: str, path: str, depth=2):
             # добавляются ссылки и удаляютсся дубликаты
             urls = set(next_step) - urls
 def get_file(filename):
-    with open(filename) as inp:
+    '''iteration'''
+    with open(filename, 'r',  encoding='utf8') as inp:
         line = inp.readline()
         while len(line)>1:
             key, value = line.split()
@@ -76,10 +77,11 @@ def get_file(filename):
             yield key, value
             line = inp.readline()
 
-def merging(arr, start, middle, stop, buf):
-    left_offset = start
+def merging(arr, starte, middle, stop, buf):
+    '''merge helper function'''
+    left_offset = starte
     right_offset = middle+1
-    buff_offset = start
+    buff_offset = starte
     while left_offset<= middle and right_offset<=stop:
         if arr[left_offset] <= arr[right_offset]:
             buf[buff_offset] = arr[left_offset]
@@ -98,16 +100,18 @@ def merging(arr, start, middle, stop, buf):
         arr[i] = buf[i]
 
 def sort(arr):
+    '''sort function'''
     buf = [0]*len(arr)
     merge_sort(arr, 0, len(arr)-1, buf)
 
-def merge_sort(arr, start, stop, buf):
-    if start >= stop:
+def merge_sort(arr, starte, stop, buf):
+    '''merge helper function'''
+    if starte >= stop:
         return
-    middle = (start + stop)//2
-    merge_sort(arr, start, middle, buf)
+    middle = (starte + stop)//2
+    merge_sort(arr, starte, middle, buf)
     merge_sort(arr, middle+1, stop, buf)
-    merging(arr, start, middle, stop, buf)
+    merging(arr, starte, middle, stop, buf)
 
 def merging_files(path = PATH):
     '''merge all files into one'''
@@ -139,7 +143,8 @@ def merging_files(path = PATH):
     #                         current_folder[keys_data[index]] = data[keys_data[index]]
     #                         index+=1
     #                     if keys_data[index] == line_read[0]:
-    #                         current_folder[keys_data[index]] = data[keys_data[index]] + int(line_read[1])
+    #                         current_folder[keys_data[index]] = data[keys_data[index]]
+    #                         + int(line_read[1])
     #                         index+=1
     #                     elif keys_data[index] > line_read[0] or index >= len(keys_data):
     #                         current_folder[line_read[0]] = int(line_read[1])
@@ -172,11 +177,13 @@ def merging_files(path = PATH):
     #                 print(len(data), len(current_folder))
     #                 while (data_i < len(data)) and (curr_i <len(current_folder)):
     #                     if keys_curr[curr_i] in res:
-    #                         res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]] + res[keys_curr[curr_i]]
+    #                         res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]] +
+    #                         res[keys_curr[curr_i]]
     #                         print(1)
     #                         curr_i+=1
     #                     if keys_data[data_i] in res:
-    #                         res[keys_data[data_i]] = data[keys_data[data_i]] + res[keys_data[data_i]]
+    #                         res[keys_data[data_i]] = data[keys_data[data_i]] \
+    #                         + res[keys_data[data_i]]
     #                         print(0)
     #                         data_i+=1
     #                     elif keys_data[data_i] > keys_curr[curr_i]:
@@ -193,13 +200,15 @@ def merging_files(path = PATH):
     #                         if keys_curr[curr_i] not in res:
     #                             res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]]
     #                         else:
-    #                             res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]] + res[keys_curr[curr_i]]
+    #                             res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]] \
+    #                             + res[keys_curr[curr_i]]
     #                 else:
     #                     for _ in range(data_i, len(data)):
     #                         if keys_data[data_i] not in res:
     #                             res[keys_data[data_i]] = data[keys_data[data_i]]
     #                         else:
-    #                             res[keys_data[data_i]] = data[keys_data[data_i]] + res[keys_data[data_i]]
+    #                             res[keys_data[data_i]] = data[keys_data[data_i]] + \
+    #                             res[keys_data[data_i]]
     #                 data = res.copy()
     #                 print(data)
     # # Путь, где будет хранится результат
@@ -210,11 +219,9 @@ def merging_files(path = PATH):
     #         w_f.write(str(key) + " " + str(value) + "\n")
 
 if __name__ == "__main__":
-    '''
-    start = time.time()
-    parse_depth(WIKI_RANDOM, PATH)
-    print(time.time() - start)
-    '''
+    # start = time.time()
+    # parse_depth(WIKI_RANDOM, PATH)
+    # print(time.time() - start)
     start = time.time()
     merging_files()
     print(time.time() - start)
