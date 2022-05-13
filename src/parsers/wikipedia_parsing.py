@@ -27,9 +27,9 @@ def wiki_parser(url: str, base_path = PATH, map_type: type = TreeMap) -> List[st
 
     # Если в папке ссылки нет файла с байт кодом
     if not os.path.exists(''.join([page_path, '/content.xml'])):
-        # создать байт код
+        # Создать байт код
         byte_code = get_byte(url)
-        # открыть файл для записиси байт кода
+        # Открыть файл для записиси байт кода
         with open(''.join([page_path, '/content.xml']), 'wb') as file:
             # Записываем байт код
             file.write(byte_code)
@@ -39,9 +39,9 @@ def wiki_parser(url: str, base_path = PATH, map_type: type = TreeMap) -> List[st
             # Достаем байт код
             byte_code = file.read()
 
-    # достаем содержимое по байт коду
+    # Достаем содержимое по байт коду
     soup = soup_of_code(byte_code)
-    # обрабатывает слова через мапу
+    # Обрабатывает слова через мапу
     data = put_text(soup, map_type)
     # Записывает результат в файлик
     data.write(''.join([page_path, '/words.txt']))
@@ -65,53 +65,68 @@ def parse_depth(url: str, path: str, depth=2):
             for new_url in new_urls:
                 # Добавляем в список
                 next_step += new_url
-            # добавляются ссылки и удаляютсся дубликаты
+            # Добавляются ссылки и удаляютсся дубликаты
             urls = set(next_step) - urls
+
 def get_file(filename):
     '''iteration'''
+    # Открываем файл для чтения
     with open(filename, 'r',  encoding='utf8') as inp:
+        # Считываем строку
         line = inp.readline()
+        # Проходимся по всему файлу
         while len(line)>1:
+            # Вытаскиваем слово и количество
             key, value = line.split()
+            # Делаем количесиво числом
             value = int(value)
+            # Возвращается слово и количество
             yield key, value
+            # Переходим к следующей строке
             line = inp.readline()
 
-def merging(arr, starte, middle, stop, buf):
-    '''merge helper function'''
-    left_offset = starte
-    right_offset = middle+1
-    buff_offset = starte
-    while left_offset<= middle and right_offset<=stop:
-        if arr[left_offset] <= arr[right_offset]:
-            buf[buff_offset] = arr[left_offset]
-            left_offset+=1
+def merge(iterator1, iterator2):
+    '''merge two iteration'''
+    # Массивс результатом, соединенные файлы
+    result = []
+    # Первые элементы двух итераторов, ели же нет элемента, то None
+    ferst_iter = next(iterator1, None)
+    second_iter = next(iterator2, None)
+    # Пока оба генератора работают, сливать их
+    while ferst_iter is not None and second_iter is not None:
+        # Если ключ второго итератора раньше, то записываем его и переходим дальше
+        if ferst_iter[0] > second_iter[0]:
+            result.append(second_iter)
+            second_iter = next(iterator2, None)
+        # Если ключ первого итератора раньше, то записываем его и переходим дальше
+        elif ferst_iter[0] < second_iter[0]:
+            result.append(ferst_iter)
+            ferst_iter = next(iterator1, None)
+        # Если ключи равны, то складываем и переходим дальше
         else:
-            buf[buff_offset] = arr[right_offset]
-            right_offset+=1
-        buff_offset+=1
-    for i in range(left_offset, middle+1):
-        buf[buff_offset] = arr[i]
-        buff_offset+=1
-    for i in range(right_offset, len(arr)):
-        buf[buff_offset] = arr[i]
-        buff_offset+=1
-    for i in range(0, len(arr)):
-        arr[i] = buf[i]
+            result.append((ferst_iter[0], ferst_iter[1]+second_iter[1]))
+            ferst_iter = next(iterator1, None)
+            second_iter = next(iterator2, None)
+    # В случае, если второй закончился, то досливаем первый
+    while ferst_iter is not None:
+        result.append(ferst_iter)
+        ferst_iter = next(iterator1, None)
+    # В случае, если первый закончился, то досливаем второй
+    while second_iter is not None:
+        result.append(second_iter)
+        second_iter = next(iterator2, None)
+    # Возвращаем итератор результата
+    return iter(result)
 
-def sort(arr):
-    '''sort function'''
-    buf = [0]*len(arr)
-    merge_sort(arr, 0, len(arr)-1, buf)
-
-def merge_sort(arr, starte, stop, buf):
-    '''merge helper function'''
-    if starte >= stop:
-        return
-    middle = (starte + stop)//2
-    merge_sort(arr, starte, middle, buf)
-    merge_sort(arr, middle+1, stop, buf)
-    merging(arr, starte, middle, stop, buf)
+def sorting(arr):
+    '''sort iterators'''
+    # Если всего один файл, то просто его возвращаем
+    if len(arr) == 1:
+        return arr[0]
+    # Находим медиану
+    middle = len(arr) //2
+    # Рекурсивно разделяем массив итераторов, потом по два сливаем
+    return merge(sorting(arr[:middle]), sorting(arr[middle:]))
 
 def merging_files(path = PATH):
     '''merge all files into one'''
@@ -127,101 +142,20 @@ def merging_files(path = PATH):
             file_name = ''.join([path, entry.name, '/words.txt'])
             # Временный словарь, для записиси слов из текущей папки
             data.append(get_file(file_name))
-
-
-
-
-    #         # Читаем и записываем в словарь слова
-    #         with open(file_name, 'r', encoding='utf8') as filen:
-    #             line_read = filen.readline().strip().split(' ')
-    #             keys_data = list(data.keys())
-    #             index = 0
-    #             print(len(keys_data))
-    #             while len(line_read)>1:
-    #                 if index < len(keys_data):
-    #                     while keys_data[index] < line_read[0] and index < len(keys_data):
-    #                         current_folder[keys_data[index]] = data[keys_data[index]]
-    #                         index+=1
-    #                     if keys_data[index] == line_read[0]:
-    #                         current_folder[keys_data[index]] = data[keys_data[index]]
-    #                         + int(line_read[1])
-    #                         index+=1
-    #                     elif keys_data[index] > line_read[0] or index >= len(keys_data):
-    #                         current_folder[line_read[0]] = int(line_read[1])
-    #                 else:
-    #                     current_folder[line_read[0]] = int(line_read[1])
-    #                 line_read = filen.readline().strip().split(' ')
-    #         for i in range(index, len(keys_data)):
-    #             current_folder[keys_data[index]] = data[keys_data[index]]
-    #         data = current_folder
-    # path = PATH + '/result.txt'
-    # # Записываем результат
-    # with open(path, 'w', encoding='utf8') as w_f:
-    #     for key, value in data.items():
-    #         w_f.write(str(key) + " " + str(value) + "\n")
-    #             # Соединяем временный словарь с основным
-    #             if len(data) < 1:
-    #                 for elem, key in current_folder.items():
-    #                     # Если такого слова еще не было, то добавляем
-    #                     if elem not in data:
-    #                         data[elem] = key
-    #                     # В противном случае увеличиваем счетчик
-    #                     else:
-    #                         data[elem] = key + data[elem]
-    #             else:
-    #                 keys_data = list(data.keys())
-    #                 keys_curr = list(current_folder.keys())
-    #                 res = {}
-    #                 data_i = 0
-    #                 curr_i = 0
-    #                 print(len(data), len(current_folder))
-    #                 while (data_i < len(data)) and (curr_i <len(current_folder)):
-    #                     if keys_curr[curr_i] in res:
-    #                         res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]] +
-    #                         res[keys_curr[curr_i]]
-    #                         print(1)
-    #                         curr_i+=1
-    #                     if keys_data[data_i] in res:
-    #                         res[keys_data[data_i]] = data[keys_data[data_i]] \
-    #                         + res[keys_data[data_i]]
-    #                         print(0)
-    #                         data_i+=1
-    #                     elif keys_data[data_i] > keys_curr[curr_i]:
-    #                         res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]]
-    #                         print(1)
-    #                         curr_i +=1
-    #                     elif keys_data[data_i] < keys_curr[curr_i]:
-    #                         res[keys_data[data_i]] = data[keys_data[data_i]]
-    #                         print(0)
-    #                         data_i+=1
-    #                 print(data_i, curr_i)
-    #                 if data_i == len(data):
-    #                     for _ in range(curr_i, len(current_folder)):
-    #                         if keys_curr[curr_i] not in res:
-    #                             res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]]
-    #                         else:
-    #                             res[keys_curr[curr_i]] = current_folder[keys_curr[curr_i]] \
-    #                             + res[keys_curr[curr_i]]
-    #                 else:
-    #                     for _ in range(data_i, len(data)):
-    #                         if keys_data[data_i] not in res:
-    #                             res[keys_data[data_i]] = data[keys_data[data_i]]
-    #                         else:
-    #                             res[keys_data[data_i]] = data[keys_data[data_i]] + \
-    #                             res[keys_data[data_i]]
-    #                 data = res.copy()
-    #                 print(data)
-    # # Путь, где будет хранится результат
-    # path = PATH+'/result.txt'
-    # # Записываем результат
-    # with open(path, 'w', encoding='utf8') as w_f:
-    #     for key, value in data.items():z
-    #         w_f.write(str(key) + " " + str(value) + "\n")
+    # Директория, где хранится файл с результатом
+    res = ''.join([PATH, '/result.txt'])
+    # Список всех слов и их количество
+    resulting = sorting(data)
+    # Открываем для записи
+    with open(res, 'w', encoding='utf8') as writ:
+        # Закидываем результат в файл
+        for key, value in resulting:
+            writ.write(str(key) + " " + str(value) + "\n")
 
 if __name__ == "__main__":
-    # start = time.time()
-    # parse_depth(WIKI_RANDOM, PATH)
-    # print(time.time() - start)
+    start = time.time()
+    parse_depth(WIKI_RANDOM, PATH)
+    print(time.time() - start)
     start = time.time()
     merging_files()
     print(time.time() - start)
