@@ -24,4 +24,4 @@ def test_delkey():
     tree_mapa["sd"] = 42
     del tree_mapa["sd"]
     with pytest.raises(KeyError):
-        var = tree_mapa["sd"]
+        tree_mapa.__getitem__("sd")
