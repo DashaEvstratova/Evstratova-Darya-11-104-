@@ -2,7 +2,7 @@
 tests for hash_map
 """
 import unittest
-from src.hash_map import HashMap
+from src.maps.hash_map import HashMap
 
 class SampleCase(unittest.TestCase):
     """
