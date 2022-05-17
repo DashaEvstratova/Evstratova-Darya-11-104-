@@ -1,0 +1,4 @@
+requests~=2.27.1
+bs4~=0.0.1
+validators~=0.18.2
+pytest==7.1.2
